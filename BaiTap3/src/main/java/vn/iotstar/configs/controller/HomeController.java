@@ -9,6 +9,11 @@ import jakarta.servlet.ServletException;
 
 @WebServlet(urlPatterns = {"/home"})
 public class HomeController extends HttpServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	protected void doGet(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp)
 			throws jakarta.servlet.ServletException, java.io.IOException {

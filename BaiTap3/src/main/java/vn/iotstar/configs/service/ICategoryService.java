@@ -4,10 +4,9 @@ import java.util.List;
 import vn.iotstar.configs.model.CategoryModel;
 
 public interface ICategoryService {
-    void insert(CategoryModel category);
-    void edit(CategoryModel category);
-    void delete(int id);
-    CategoryModel get(int id);
-    List<CategoryModel> getAll();
-    List<CategoryModel> findAll();
+	 void insert(CategoryModel c);
+	 void update(CategoryModel c);
+	 void delete(int id);
+	 CategoryModel findById(int id);
+	 List<CategoryModel> findAll();
 }

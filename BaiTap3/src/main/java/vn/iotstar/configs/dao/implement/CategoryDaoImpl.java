@@ -13,19 +13,19 @@ public class CategoryDaoImpl extends DBConnect implements ICategoryDao {
     public void insert(CategoryModel category) {
         String sql = "INSERT INTO Category (cate_name, icons) VALUES (?, ?)";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, category.getName());
-            ps.setString(2, category.getIcon());
+            ps.setString(1, category.getCateName());
+            ps.setString(2, category.getIcons());
             ps.executeUpdate();
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     @Override
-    public void edit(CategoryModel category) {
+    public void update(CategoryModel category) {
         String sql = "UPDATE Category SET cate_name = ?, icons = ? WHERE cate_id = ?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, category.getName());
-            ps.setString(2, category.getIcon());
-            ps.setInt(3, category.getId());
+            ps.setString(1, category.getCateName());
+            ps.setString(2, category.getIcons());
+            ps.setInt(3, category.getCateId());
             ps.executeUpdate();
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -40,7 +40,7 @@ public class CategoryDaoImpl extends DBConnect implements ICategoryDao {
     }
 
     @Override
-    public CategoryModel get(int id) {
+    public CategoryModel findById(int id) {
         String sql = "SELECT * FROM Category WHERE cate_id = ?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -57,7 +57,7 @@ public class CategoryDaoImpl extends DBConnect implements ICategoryDao {
     }
 
     @Override
-    public List<CategoryModel> getAll() {
+    public List<CategoryModel> findAll() {
         List<CategoryModel> list = new ArrayList<>();
         String sql = "SELECT * FROM Category";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -72,22 +72,4 @@ public class CategoryDaoImpl extends DBConnect implements ICategoryDao {
         } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
-
-	@Override
-	public List<CategoryModel> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CategoryModel findById(int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void update(CategoryModel category) {
-		// TODO Auto-generated method stub
-		
-	}
 }
