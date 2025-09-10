@@ -24,14 +24,14 @@ public class UserDaoImpl extends DBConnect implements IUserDao{
 			while (rs.next()) {
 				UserModel user = new UserModel();
 				user.setId(rs.getInt("id"));
-				user.setUserName(rs.getString("userName"));
+				user.setUserName(rs.getString("username"));
 				user.setEmail(rs.getString("email"));
-				user.setPassWord(rs.getString("passWord"));
-				user.setFullName(rs.getString("fullName"));
+				user.setPassWord(rs.getString("password"));
+				user.setFullName(rs.getString("fullname"));
 				user.setAvatar(rs.getString("avatar"));
 				user.setRoleid(rs.getInt("roleid"));
 				user.setPhone(rs.getString("phone"));
-				user.setCreatedDate(rs.getDate("createdDate"));
+				user.setCreatedDate(rs.getDate("createDate"));
 				users.add(user);
 			}
 		} catch (Exception e) {
@@ -55,14 +55,14 @@ public class UserDaoImpl extends DBConnect implements IUserDao{
 			if (rs.next()) {
 				user = new UserModel();
 				user.setId(rs.getInt("id"));
-				user.setUserName(rs.getString("userName"));
+				user.setUserName(rs.getString("username"));
 				user.setEmail(rs.getString("email"));
-				user.setPassWord(rs.getString("passWord"));
-				user.setFullName(rs.getString("fullName"));
+				user.setPassWord(rs.getString("password"));
+				user.setFullName(rs.getString("fullname"));
 				user.setAvatar(rs.getString("avatar"));
 				user.setRoleid(rs.getInt("roleid"));
 				user.setPhone(rs.getString("phone"));
-				user.setCreatedDate(rs.getDate("createdDate"));
+				user.setCreatedDate(rs.getDate("createDate"));
 			}
 			rs.close();
 		} catch (Exception e) {
@@ -86,14 +86,14 @@ public class UserDaoImpl extends DBConnect implements IUserDao{
 			if (rs.next()) {
 				user = new UserModel();
 				user.setId(rs.getInt("id"));
-				user.setUserName(rs.getString("userName"));
+				user.setUserName(rs.getString("username"));
 				user.setEmail(rs.getString("email"));
-				user.setPassWord(rs.getString("passWord"));
-				user.setFullName(rs.getString("fullName"));
+				user.setPassWord(rs.getString("password"));
+				user.setFullName(rs.getString("fullname"));
 				user.setAvatar(rs.getString("avatar"));
 				user.setRoleid(rs.getInt("roleid"));
 				user.setPhone(rs.getString("phone"));
-				user.setCreatedDate(rs.getDate("createdDate"));
+				user.setCreatedDate(rs.getDate("createDate"));
 			}
 			rs.close();
 		} catch (Exception e) {
@@ -105,7 +105,7 @@ public class UserDaoImpl extends DBConnect implements IUserDao{
 
 	@Override
 	public void insert(UserModel user) {
-		String sql = "INSERT INTO Users (userName, email, passWord, fullName, avatar, roleid, phone, createdDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Users (username, email, password, fullname, avatar, roleid, phone, createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 		try (Connection conn = getConnection();
 			 PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setString(1, user.getUserName());
@@ -141,7 +141,7 @@ public class UserDaoImpl extends DBConnect implements IUserDao{
 	@Override
 	public boolean checkExistUsername(String username) {
 		boolean duplicate = false;
-		String query = "SELECT * FROM Users WHERE userName = ?";
+		String query = "SELECT * FROM Users WHERE username = ?";
 		try (Connection conn = getConnection();
 			 PreparedStatement ps = conn.prepareStatement(query)) {
 			ps.setString(1, username);
@@ -173,7 +173,7 @@ public class UserDaoImpl extends DBConnect implements IUserDao{
 
 	@Override
 	public void update(UserModel user) {
-		String sql = "UPDATE Users SET userName = ?, email = ?, passWord = ?, fullName = ?, avatar = ?, roleid = ?, phone = ?, createdDate = ? WHERE id = ?";
+		String sql = "UPDATE Users SET username = ?, email = ?, password = ?, fullname = ?, avatar = ?, roleid = ?, phone = ?, createDate = ? WHERE id = ?";
 		
 		try (Connection conn = getConnection();
 			 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -204,14 +204,14 @@ public class UserDaoImpl extends DBConnect implements IUserDao{
 	        if (rs.next()) {
 	            user = new UserModel();
 	            user.setId(rs.getInt("id"));
-	            user.setUserName(rs.getString("userName"));
+	            user.setUserName(rs.getString("username"));
 	            user.setEmail(rs.getString("email"));
-	            user.setPassWord(rs.getString("passWord"));
-	            user.setFullName(rs.getString("fullName"));
+	            user.setPassWord(rs.getString("password"));
+	            user.setFullName(rs.getString("fullname"));
 	            user.setAvatar(rs.getString("avatar"));
 	            user.setRoleid(rs.getInt("roleid"));
 	            user.setPhone(rs.getString("phone"));
-	            user.setCreatedDate(rs.getDate("createdDate"));
+	            user.setCreatedDate(rs.getDate("createDate"));
 	        }
 	        rs.close();
 	    } catch (Exception e) {
