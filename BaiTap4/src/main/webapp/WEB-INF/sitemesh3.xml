@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+    <!-- Áp dụng decorator web.jsp cho tất cả -->
+    <mapping path="/*" name="web" decorator="/web.jsp"/>
+    <!-- Áp dụng decorator admin.jsp cho các trang admin -->
+    <mapping path="/admin/*" name="admin" decorator="/admin.jsp"/>
+    <!-- Bỏ qua API -->
+    <mapping path="/api*" exclude="true"/>
+</sitemesh>
