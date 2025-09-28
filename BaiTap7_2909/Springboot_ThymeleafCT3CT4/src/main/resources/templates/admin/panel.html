@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - ECSHOP</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-cogs me-2 text-primary"></i>Admin Panel
+            </h1>
+            <p class="text-muted mb-0">Quản lý toàn bộ hệ thống ECSHOP</p>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="fas fa-tools me-1"></i>Công cụ Admin
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" th:href="@{/admin/settings}"><i class="fas fa-cog me-1"></i>Cài đặt hệ thống</a></li>
+                <li><a class="dropdown-item" th:href="@{/admin/reports}"><i class="fas fa-chart-bar me-1"></i>Báo cáo</a></li>
+                <li><a class="dropdown-item" th:href="@{/admin/logs}"><i class="fas fa-file-alt me-1"></i>Nhật ký hệ thống</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" onclick="backupSystem()"><i class="fas fa-download me-1"></i>Backup dữ liệu</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- System Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tổng người dùng</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUsers}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <a th:href="@{/users}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i>Quản lý
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Tổng danh mục</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalCategories}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-folder fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <a th:href="@{/categories}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-eye me-1"></i>Quản lý
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Quản trị viên</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalAdmins}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <span class="badge bg-info">Hoạt động</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Hệ thống</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">100%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-server fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-bolt me-2"></i>Thao tác nhanh
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <a th:href="@{/users/add}" class="btn btn-outline-primary w-100 py-3 quick-action">
+                                <i class="fas fa-user-plus fa-2x mb-2"></i><br>
+                                <strong>Thêm người dùng</strong><br>
+                                <small class="text-muted">Tạo tài khoản mới</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <a th:href="@{/categories/add}" class="btn btn-outline-success w-100 py-3 quick-action">
+                                <i class="fas fa-folder-plus fa-2x mb-2"></i><br>
+                                <strong>Thêm danh mục</strong><br>
+                                <small class="text-muted">Tạo danh mục mới</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <a th:href="@{/admin/reports}" class="btn btn-outline-info w-100 py-3 quick-action">
+                                <i class="fas fa-chart-line fa-2x mb-2"></i><br>
+                                <strong>Xem báo cáo</strong><br>
+                                <small class="text-muted">Thống kê chi tiết</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <a th:href="@{/admin/settings}" class="btn btn-outline-warning w-100 py-3 quick-action">
+                                <i class="fas fa-cogs fa-2x mb-2"></i><br>
+                                <strong>Cài đặt</strong><br>
+                                <small class="text-muted">Cấu hình hệ thống</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <!-- Recent Users -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-users me-2"></i>Người dùng mới
+                    </h6>
+                    <a th:href="@{/users}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-eye me-1"></i>Xem tất cả
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div th:if="${recentUsers.empty}" class="text-center text-muted py-4">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <p>Chưa có người dùng nào</p>
+                    </div>
+                    
+                    <div th:if="${!recentUsers.empty}">
+                        <div th:each="user : ${recentUsers}" class="d-flex align-items-center py-2 border-bottom">
+                            <div class="me-3">
+                                <img th:if="${user.avatar}" th:src="@{'/uploads/avatars/' + ${user.avatar}}" 
+                                     class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                <div th:if="${!user.avatar}" class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white" 
+                                     style="width: 40px; height: 40px; font-weight: bold;">
+                                    <span th:text="${#strings.substring(user.fullName != null ? user.fullName : user.username, 0, 1).toUpperCase()}">A</span>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0" th:text="${user.fullName}">User Name</h6>
+                                <small class="text-muted">
+                                    <span th:switch="${user.role.name()}">
+                                        <span th:case="'ADMIN'" class="badge bg-danger">Admin</span>
+                                        <span th:case="'MANAGER'" class="badge bg-warning">Manager</span>
+                                        <span th:case="'USER'" class="badge bg-info">User</span>
+                                    </span>
+                                    <span th:if="${user.active}" class="badge bg-success ms-1">Hoạt động</span>
+                                    <span th:unless="${user.active}" class="badge bg-secondary ms-1">Không hoạt động</span>
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Categories -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-folder me-2"></i>Danh mục gần đây
+                    </h6>
+                    <a th:href="@{/categories}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-eye me-1"></i>Xem tất cả
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div th:if="${recentCategories.empty}" class="text-center text-muted py-4">
+                        <i class="fas fa-folder-open fa-3x mb-3"></i>
+                        <p>Chưa có danh mục nào</p>
+                    </div>
+                    
+                    <div th:if="${!recentCategories.empty}">
+                        <div th:each="category : ${recentCategories}" class="d-flex align-items-center py-2 border-bottom">
+                            <div class="me-3">
+                                <img th:if="${category.image}" th:src="@{'/uploads/' + ${category.image}}" 
+                                     class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                                <div th:if="${!category.image}" class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                     style="width: 40px; height: 40px;">
+                                    <i class="fas fa-image text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0" th:text="${category.name}">Category Name</h6>
+                                <small class="text-muted">
+                                    <span th:if="${category.show}" class="badge bg-success">Hiển thị</span>
+                                    <span th:if="${!category.show}" class="badge bg-danger">Ẩn</span>
+                                    <span th:if="${category.subHome}" class="badge bg-info">Trang chủ</span>
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <a th:href="@{/categories/edit/{id}(id=${category.id})}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Information -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle me-2"></i>Thông tin hệ thống
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-server fa-3x text-primary mb-2"></i>
+                                <h6>Phiên bản</h6>
+                                <p class="text-muted">ECSHOP v1.0</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-database fa-3x text-success mb-2"></i>
+                                <h6>Database</h6>
+                                <p class="text-muted">SQL Server</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-java fa-3x text-warning mb-2"></i>
+                                <h6>Java Version</h6>
+                                <p class="text-muted">Java 21</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-leaf fa-3x text-info mb-2"></i>
+                                <h6>Spring Boot</h6>
+                                <p class="text-muted">v3.5.5</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function backupSystem() {
+            if (confirm('Bạn có muốn tạo bản backup cho hệ thống?')) {
+                ECSHOP.showNotification('Đang tạo backup...', 'info');
+                
+                // Simulate backup process
+                setTimeout(() => {
+                    ECSHOP.showNotification('Backup đã được tạo thành công!', 'success');
+                }, 3000);
+            }
+        }
+        
+        // Add animations to cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('page-enter');
+            });
+            
+            // Quick action hover effects
+            const quickActions = document.querySelectorAll('.quick-action');
+            quickActions.forEach(action => {
+                action.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.05)';
+                    this.style.boxShadow = '0 15px 30px rgba(0,0,0,0.2)';
+                });
+                
+                action.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .quick-action {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e3e6f0;
+        }
+        
+        .quick-action:hover {
+            border-color: currentColor;
+        }
+        
+        .page-enter {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</main>
+</body>
+</html>

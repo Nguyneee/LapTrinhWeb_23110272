@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý người dùng</title>
+    <!-- User Management CSS -->
+    <link th:href="@{/css/user-management.css}" rel="stylesheet"/>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-users me-2 text-primary"></i>Quản lý người dùng
+            </h1>
+            <p class="text-muted mb-0">Quản lý tài khoản người dùng trong hệ thống</p>
+        </div>
+        <a th:href="@{/users/add}" class="btn btn-primary shadow-sm">
+            <i class="fas fa-user-plus fa-sm text-white-50 me-1"></i> Thêm người dùng mới
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tổng người dùng</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUsers}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Quản trị viên</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalAdmins}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Quản lý</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalManagers}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-tie fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Người dùng thường</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalRegularUsers}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}"><i class="fas fa-home"></i></a></li>
+            <li class="breadcrumb-item active" aria-current="page">Quản lý người dùng</li>
+        </ol>
+    </nav>
+
+    <!-- Search and Filter Box -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-search me-1"></i> Tìm kiếm & Lọc
+            </h6>
+            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="true">
+                <i class="fas fa-filter"></i>
+            </button>
+        </div>
+        <div class="collapse show" id="searchCollapse">
+            <div class="card-body">
+                <form th:action="@{/users}" method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" name="keyword" th:value="${keyword}" class="form-control" 
+                                   placeholder="Tìm theo tên, email, username...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="role" class="form-select">
+                            <option value="">Tất cả vai trò</option>
+                            <option value="ADMIN" th:selected="${selectedRole == 'ADMIN'}">Quản trị viên</option>
+                            <option value="MANAGER" th:selected="${selectedRole == 'MANAGER'}">Quản lý</option>
+                            <option value="USER" th:selected="${selectedRole == 'USER'}">Người dùng</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="d-grid gap-2 d-md-flex">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search me-1"></i>Tìm kiếm
+                            </button>
+                            <a th:href="@{/users}" class="btn btn-outline-secondary">
+                                <i class="fas fa-sync-alt me-1"></i>Reset
+                            </a>
+                            <button type="button" class="btn btn-outline-success" onclick="exportUsers()">
+                                <i class="fas fa-file-excel me-1"></i>Xuất Excel
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-table me-1"></i> Danh sách người dùng
+            </h6>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-primary me-2" th:text="${users.size() + ' / ' + totalElements + ' người dùng'}"></span>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="exportUsers()"><i class="fas fa-download me-1"></i>Xuất Excel</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="printUsers()"><i class="fas fa-print me-1"></i>In danh sách</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-upload me-1"></i>Nhập từ Excel</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="usersTable">
+                    <thead class="table-dark">
+                    <tr>
+                        <th class="text-center" style="width: 60px;">
+                            <input type="checkbox" id="selectAll" class="form-check-input">
+                        </th>
+                        <th class="text-center" style="width: 50px;">#</th>
+                        <th style="width: 80px;">Avatar</th>
+                        <th>Thông tin</th>
+                        <th class="text-center" style="width: 100px;">Vai trò</th>
+                        <th class="text-center" style="width: 100px;">Trạng thái</th>
+                        <th class="text-center" style="width: 120px;">Đăng nhập cuối</th>
+                        <th class="text-center" style="width: 180px;">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user, stat : ${users}" class="user-row">
+                        <!-- Checkbox -->
+                        <td class="text-center">
+                            <input type="checkbox" class="form-check-input user-checkbox" th:value="${user.id}">
+                        </td>
+                        
+                        <!-- STT -->
+                        <td class="text-center">
+                            <span class="badge bg-secondary" th:text="${stat.count + (currentPage * 10)}"></span>
+                        </td>
+                        
+                        <!-- Avatar -->
+                        <td class="text-center">
+                            <div class="avatar-container">
+                                <img th:if="${user.avatar != null}" th:src="@{'/uploads/avatars/' + ${user.avatar}}" 
+                                     class="avatar rounded-circle" 
+                                     style="width: 50px; height: 50px; object-fit: cover; cursor: pointer;" 
+                                     alt="Avatar"
+                                     data-bs-toggle="modal" data-bs-target="#avatarModal"
+                                     th:onclick="'showAvatarModal(\'' + @{'/uploads/avatars/' + ${user.avatar}} + '\', \'' + ${user.fullName} + '\')'">
+                                <div th:if="${user.avatar == null}" class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" 
+                                     style="width: 50px; height: 50px; font-weight: bold;">
+                                    <span th:text="${#strings.substring(user.fullName != null ? user.fullName : user.username, 0, 1).toUpperCase()}">A</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- User Info -->
+                        <td>
+                            <div class="user-info">
+                                <h6 class="mb-0">
+                                    <a th:href="@{/users/view/{id}(id=${user.id})}" class="text-decoration-none fw-bold user-name" th:text="${user.fullName}">Full Name</a>
+                                </h6>
+                                <div class="text-muted small">
+                                    <i class="fas fa-user me-1"></i><span th:text="${user.username}">username</span>
+                                </div>
+                                <div class="text-muted small">
+                                    <i class="fas fa-envelope me-1"></i><span th:text="${user.email}">email</span>
+                                </div>
+                                <div th:if="${user.phoneNumber}" class="text-muted small">
+                                    <i class="fas fa-phone me-1"></i><span th:text="${user.phoneNumber}">phone</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Role -->
+                        <td class="text-center">
+                            <span th:switch="${user.role.name()}">
+                                <span th:case="'ADMIN'" class="badge bg-danger">
+                                    <i class="fas fa-user-shield me-1"></i>Admin
+                                </span>
+                                <span th:case="'MANAGER'" class="badge bg-warning">
+                                    <i class="fas fa-user-tie me-1"></i>Manager
+                                </span>
+                                <span th:case="'USER'" class="badge bg-info">
+                                    <i class="fas fa-user me-1"></i>User
+                                </span>
+                            </span>
+                        </td>
+
+                        <!-- Status -->
+                        <td class="text-center">
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input type="checkbox" th:checked="${user.active}" class="form-check-input status-toggle" 
+                                       th:data-id="${user.id}" style="cursor: pointer;">
+                            </div>
+                        </td>
+
+                        <!-- Last Login -->
+                        <td class="text-center">
+                            <span th:if="${user.lastLogin != null}" class="text-muted small" 
+                                  th:text="${#temporals.format(user.lastLogin, 'dd/MM/yyyy HH:mm')}">
+                            </span>
+                            <span th:if="${user.lastLogin == null}" class="text-muted small">
+                                Chưa đăng nhập
+                            </span>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a th:href="@{/users/view/{id}(id=${user.id})}" 
+                                   class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a th:href="@{/users/edit/{id}(id=${user.id})}" 
+                                   class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger delete-btn" 
+                                        th:data-id="${user.id}" th:data-name="${user.fullName}"
+                                        data-bs-toggle="tooltip" title="Xóa">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${users.empty}">
+                        <td colspan="8" class="text-center py-5">
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle fa-2x mb-3 d-block"></i>
+                                <h5>Không tìm thấy người dùng nào</h5>
+                                <p class="mb-3">Hãy thêm người dùng đầu tiên để bắt đầu quản lý</p>
+                                <a th:href="@{/users/add}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>Thêm người dùng ngay
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Bulk Actions -->
+            <div class="bulk-actions d-none border-top pt-3 mt-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-muted">
+                        <span id="selectedCount">0</span> người dùng được chọn
+                    </span>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-success" id="bulkActivate">
+                            <i class="fas fa-check me-1"></i>Kích hoạt
+                        </button>
+                        <button class="btn btn-sm btn-warning" id="bulkDeactivate">
+                            <i class="fas fa-times me-1"></i>Vô hiệu hóa
+                        </button>
+                        <button class="btn btn-sm btn-danger" id="bulkDelete">
+                            <i class="fas fa-trash me-1"></i>Xóa
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}" class="d-flex justify-content-between align-items-center mt-4">
+                <div class="showing-info">
+                    <small class="text-muted">
+                        Hiển thị <span th:text="${(currentPage * 10) + 1}">1</span> 
+                        đến <span th:text="${Math.min((currentPage + 1) * 10, totalElements)}">10</span> 
+                        trong tổng số <span th:text="${totalElements}">0</span> người dùng
+                    </small>
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination mb-0">
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/users(page=0, size=10, keyword=${keyword}, role=${selectedRole})}" aria-label="First">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/users(page=${currentPage - 1}, size=10, keyword=${keyword}, role=${selectedRole})}" aria-label="Previous">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                        
+                        <!-- Page numbers -->
+                        <li class="page-item" th:each="i : ${#numbers.sequence(Math.max(0, currentPage - 2), Math.min(totalPages - 1, currentPage + 2))}" 
+                            th:classappend="${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/users(page=${i}, size=10, keyword=${keyword}, role=${selectedRole})}" th:text="${i + 1}"></a>
+                        </li>
+                        
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/users(page=${currentPage + 1}, size=10, keyword=${keyword}, role=${selectedRole})}" aria-label="Next">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/users(page=${totalPages - 1}, size=10, keyword=${keyword}, role=${selectedRole})}" aria-label="Last">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar Modal -->
+    <div class="modal fade" id="avatarModal" tabindex="-1" aria-labelledby="avatarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="avatarModalLabel">Avatar người dùng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalAvatar" src="" alt="Avatar" class="img-fluid rounded">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>Xác nhận xóa
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa người dùng <strong id="deleteItemName"></strong> không?</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Hành động này không thể hoàn tác!
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <a id="confirmDeleteBtn" href="#" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Xóa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select all functionality
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const userCheckboxes = document.querySelectorAll('.user-checkbox');
+            const bulkActions = document.querySelector('.bulk-actions');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            selectAllCheckbox?.addEventListener('change', function() {
+                userCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateBulkActions();
+            });
+            
+            userCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateBulkActions);
+            });
+            
+            function updateBulkActions() {
+                const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+                const count = checkedBoxes.length;
+                
+                if (selectedCount) selectedCount.textContent = count;
+                
+                if (count > 0) {
+                    bulkActions?.classList.remove('d-none');
+                } else {
+                    bulkActions?.classList.add('d-none');
+                }
+                
+                // Update select all checkbox state
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = count === userCheckboxes.length;
+                    selectAllCheckbox.indeterminate = count > 0 && count < userCheckboxes.length;
+                }
+            }
+            
+            // Avatar modal functionality
+            window.showAvatarModal = function(imageSrc, userName) {
+                document.getElementById('modalAvatar').src = imageSrc;
+                document.getElementById('avatarModalLabel').textContent = 'Avatar: ' + userName;
+            };
+            
+            // Delete modal functionality
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    const name = this.dataset.name;
+                    
+                    document.getElementById('deleteItemName').textContent = name;
+                    document.getElementById('confirmDeleteBtn').href = '/users/delete/' + id;
+                    
+                    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+                });
+            });
+            
+            // Status toggle functionality
+            const statusToggles = document.querySelectorAll('.status-toggle');
+            statusToggles.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const id = this.dataset.id;
+                    const isActive = this.checked;
+                    
+                    // Send AJAX request to toggle status
+                    fetch(`/users/toggle-status/${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === 'success') {
+                            ECSHOP.showNotification(
+                                `Đã ${isActive ? 'kích hoạt' : 'vô hiệu hóa'} người dùng`, 
+                                'success'
+                            );
+                        } else {
+                            this.checked = !isActive; // Revert checkbox
+                            ECSHOP.showNotification('Có lỗi xảy ra', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        this.checked = !isActive; // Revert checkbox
+                        ECSHOP.showNotification('Có lỗi xảy ra', 'error');
+                    });
+                });
+            });
+            
+            // Bulk actions
+            document.getElementById('bulkActivate')?.addEventListener('click', function() {
+                const checkedIds = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+                bulkAction('activate', checkedIds);
+            });
+            
+            document.getElementById('bulkDeactivate')?.addEventListener('click', function() {
+                const checkedIds = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+                bulkAction('deactivate', checkedIds);
+            });
+            
+            document.getElementById('bulkDelete')?.addEventListener('click', function() {
+                const checkedIds = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+                if (confirm('Bạn có chắc chắn muốn xóa ' + checkedIds.length + ' người dùng đã chọn?')) {
+                    bulkAction('delete', checkedIds);
+                }
+            });
+            
+            function bulkAction(action, userIds) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/users/bulk-action';
+                
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = action;
+                form.appendChild(actionInput);
+                
+                userIds.forEach(id => {
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'userIds';
+                    idInput.value = id;
+                    form.appendChild(idInput);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+        
+        // Export functions
+        function exportUsers() {
+            ECSHOP.showNotification('Tính năng xuất Excel đang được phát triển!', 'info');
+        }
+        
+        function printUsers() {
+            window.print();
+        }
+    </script>
+    
+    <!-- User Management JavaScript -->
+    <script th:src="@{/js/user-management.js}"></script>
+
+    <style>
+        .user-row {
+            transition: all 0.2s ease;
+        }
+        
+        .user-row:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+            transform: scale(1.005);
+        }
+        
+        .avatar {
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+        
+        .avatar-placeholder {
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .user-name {
+            color: #2c3e50;
+        }
+        
+        .user-name:hover {
+            color: #3498db;
+        }
+        
+        .badge {
+            font-size: 0.75em;
+        }
+        
+        .form-switch .form-check-input:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+    </style>
+</main>
+</body>
+</html>

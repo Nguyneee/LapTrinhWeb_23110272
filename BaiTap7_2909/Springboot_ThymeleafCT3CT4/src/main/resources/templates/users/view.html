@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết người dùng</title>
+    <!-- User Management CSS -->
+    <link th:href="@{/css/user-management.css}" rel="stylesheet"/>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-user me-2 text-info"></i>Chi tiết người dùng
+            </h1>
+            <p class="text-muted mb-0" th:text="${user.fullName}"></p>
+        </div>
+        <div class="btn-group">
+            <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-warning">
+                <i class="fas fa-edit me-1"></i>Chỉnh sửa
+            </a>
+            <a th:href="@{/users}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
+            </a>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}"><i class="fas fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a th:href="@{/users}">Quản lý người dùng</a></li>
+            <li class="breadcrumb-item active" aria-current="page" th:text="${user.fullName}"></li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- User Profile Card -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <div class="avatar-container mb-3">
+                        <img th:if="${user.avatar != null}" 
+                             th:src="@{'/uploads/avatars/' + ${user.avatar}}"
+                             class="avatar-large rounded-circle shadow" 
+                             alt="Avatar">
+                        <div th:if="${user.avatar == null}" 
+                             class="avatar-placeholder-large rounded-circle d-flex align-items-center justify-content-center bg-primary text-white shadow mx-auto">
+                            <span th:text="${#strings.substring(user.fullName != null ? user.fullName : user.username, 0, 1).toUpperCase()}" 
+                                  style="font-size: 3rem; font-weight: bold;">A</span>
+                        </div>
+                    </div>
+                    
+                    <h4 class="mb-1" th:text="${user.fullName}">Full Name</h4>
+                    <p class="text-muted mb-3">@<span th:text="${user.username}">username</span></p>
+                    
+                    <!-- Status Badges -->
+                    <div class="mb-3">
+                        <span th:switch="${user.role.name()}" class="me-2">
+                            <span th:case="'ADMIN'" class="badge bg-danger">
+                                <i class="fas fa-user-shield me-1"></i>Quản trị viên
+                            </span>
+                            <span th:case="'MANAGER'" class="badge bg-warning">
+                                <i class="fas fa-user-tie me-1"></i>Quản lý
+                            </span>
+                            <span th:case="'USER'" class="badge bg-info">
+                                <i class="fas fa-user me-1"></i>Người dùng
+                            </span>
+                        </span>
+                        
+                        <span th:if="${user.active}" class="badge bg-success">
+                            <i class="fas fa-check me-1"></i>Hoạt động
+                        </span>
+                        <span th:unless="${user.active}" class="badge bg-danger">
+                            <i class="fas fa-times me-1"></i>Không hoạt động
+                        </span>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="btn-group w-100" role="group">
+                        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="sendMessage()">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Details Card -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle me-2"></i>Thông tin chi tiết
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th style="width: 40%; color: #5a5c69;">
+                                        <i class="fas fa-id-card me-2"></i>ID:
+                                    </th>
+                                    <td th:text="${user.id}"></td>
+                                </tr>
+                                <tr>
+                                    <th style="color: #5a5c69;">
+                                        <i class="fas fa-user me-2"></i>Họ và tên:
+                                    </th>
+                                    <td th:text="${user.fullName}"></td>
+                                </tr>
+                                <tr>
+                                    <th style="color: #5a5c69;">
+                                        <i class="fas fa-at me-2"></i>Tên đăng nhập:
+                                    </th>
+                                    <td th:text="${user.username}"></td>
+                                </tr>
+                                <tr>
+                                    <th style="color: #5a5c69;">
+                                        <i class="fas fa-envelope me-2"></i>Email:
+                                    </th>
+                                    <td>
+                                        <a th:href="'mailto:' + ${user.email}" th:text="${user.email}" class="text-decoration-none"></a>
+                                        <span th:if="${user.verified}" class="badge bg-success ms-2">
+                                            <i class="fas fa-check"></i> Đã xác thực
+                                        </span>
+                                        <span th:unless="${user.verified}" class="badge bg-warning ms-2">
+                                            <i class="fas fa-clock"></i> Chưa xác thực
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${user.phoneNumber}">
+                                    <th style="color: #5a5c69;">
+                                        <i class="fas fa-phone me-2"></i>Số điện thoại:
+                                    </th>
+                                    <td>
+                                        <a th:href="'tel:' + ${user.phoneNumber}" th:text="${user.phoneNumber}" class="text-decoration-none"></a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th style="width: 40%; color: #5a5c69;">
+                                        <i class="fas fa-shield-alt me-2"></i>Vai trò:
+                                    </th>
+                                    <td>
+                                        <span th:switch="${user.role.name()}">
+                                            <span th:case="'ADMIN'" class="badge bg-danger">Quản trị viên</span>
+                                            <span th:case="'MANAGER'" class="badge bg-warning">Quản lý</span>
+                                            <span th:case="'USER'" class="badge bg-info">Người dùng</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="color: #5a5c69;">
+                                        <i class="fas fa-toggle-on me-2"></i>Trạng thái:
+                                    </th>
+                                    <td>
+                                        <span th:if="${user.active}" class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Hoạt động
+                                        </span>
+                                        <span th:unless="${user.active}" class="badge bg-danger">
+                                            <i class="fas fa-times me-1"></i>Không hoạt động
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="color: #5a5c69;">
+                                        <i class="fas fa-calendar-plus me-2"></i>Ngày tạo:
+                                    </th>
+                                    <td th:text="${#temporals.format(user.createdDate, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                                </tr>
+                                <tr>
+                                    <th style="color: #5a5c69;">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập cuối:
+                                    </th>
+                                    <td>
+                                        <span th:if="${user.lastLogin != null}" th:text="${#temporals.format(user.lastLogin, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                                        <span th:if="${user.lastLogin == null}" class="text-muted">Chưa đăng nhập</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Timeline -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-history me-2"></i>Lịch sử hoạt động
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Tạo tài khoản</h6>
+                                <p class="text-muted mb-0">
+                                    Tài khoản được tạo bởi hệ thống
+                                    <br><small th:text="${#temporals.format(user.createdDate, 'dd/MM/yyyy HH:mm:ss')}"></small>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${user.lastLogin != null}" class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Đăng nhập cuối cùng</h6>
+                                <p class="text-muted mb-0">
+                                    Người dùng đã đăng nhập vào hệ thống
+                                    <br><small th:text="${#temporals.format(user.lastLogin, 'dd/MM/yyyy HH:mm:ss')}"></small>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${user.verified}" class="timeline-item">
+                            <div class="timeline-marker bg-warning"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Xác thực email</h6>
+                                <p class="text-muted mb-0">
+                                    Email đã được xác thực thành công
+                                    <br><small>Thời gian xác thực</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>Xác nhận xóa
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa người dùng <strong th:text="${user.fullName}"></strong> không?</p>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        Hành động này không thể hoàn tác! Tất cả dữ liệu liên quan sẽ bị xóa.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <a th:href="@{/users/delete/{id}(id=${user.id})}" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Xóa người dùng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-envelope text-info me-2"></i>Gửi tin nhắn
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="messageForm">
+                        <div class="mb-3">
+                            <label for="messageSubject" class="form-label">Tiêu đề</label>
+                            <input type="text" class="form-control" id="messageSubject" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="messageContent" class="form-label">Nội dung</label>
+                            <textarea class="form-control" id="messageContent" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="sendMessageToUser()">
+                        <i class="fas fa-paper-plane me-1"></i>Gửi tin nhắn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmDelete() {
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+        
+        function sendMessage() {
+            new bootstrap.Modal(document.getElementById('messageModal')).show();
+        }
+        
+        function sendMessageToUser() {
+            const subject = document.getElementById('messageSubject').value;
+            const content = document.getElementById('messageContent').value;
+            
+            if (!subject || !content) {
+                ECSHOP.showNotification('Vui lòng điền đầy đủ thông tin!', 'error');
+                return;
+            }
+            
+            // In real application, this would send the message
+            ECSHOP.showNotification('Tin nhắn đã được gửi thành công!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('messageModal')).hide();
+            
+            // Reset form
+            document.getElementById('messageForm').reset();
+        }
+        
+        // Add smooth animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('page-enter');
+            });
+        });
+    </script>
+
+    <style>
+        .avatar-large {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 4px solid #fff;
+        }
+        
+        .avatar-placeholder-large {
+            width: 120px;
+            height: 120px;
+            font-size: 3rem;
+            border: 4px solid #fff;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e3e6f0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: -23px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 2px #e3e6f0;
+        }
+        
+        .timeline-content h6 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.15) !important;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+        }
+        
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .page-enter {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</main>
+</body>
+</html>

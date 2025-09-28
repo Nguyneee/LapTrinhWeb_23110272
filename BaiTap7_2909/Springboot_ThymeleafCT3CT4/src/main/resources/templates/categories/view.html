@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết danh mục</title>
+</head>
+<body>
+<main layout:fragment="content" class="container mt-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/categories}">Danh mục</a></li>
+            <li class="breadcrumb-item active" th:text="${category.name}"></li>
+        </ol>
+    </nav>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Chi tiết danh mục</h4>
+            <div>
+                <a th:href="@{/categories/edit/{id}(id=${category.id})}" class="btn btn-sm btn-light">
+                    <i class="fas fa-edit"></i> Chỉnh sửa
+                </a>
+                <a th:href="@{/categories}" class="btn btn-sm btn-light ms-2">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Ảnh danh mục -->
+                <div class="col-md-4 text-center">
+                    <div class="mb-3">
+                        <img th:if="${category.image != null}" 
+                             th:src="@{'/uploads/' + ${category.image}}"
+                             class="img-fluid rounded shadow" 
+                             style="max-height: 300px; object-fit: contain;"
+                             alt="Category Image">
+                        <div th:if="${category.image == null}" 
+                             class="border rounded d-flex align-items-center justify-content-center" 
+                             style="height: 200px; background-color: #f8f9fa;">
+                            <span class="text-muted">Không có hình ảnh</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Thông tin danh mục -->
+                <div class="col-md-8">
+                    <table class="table table-striped">
+                        <tr>
+                            <th style="width: 200px;">ID:</th>
+                            <td th:text="${category.id}"></td>
+                        </tr>
+                        <tr>
+                            <th>Tên danh mục:</th>
+                            <td th:text="${category.name}"></td>
+                        </tr>
+                        <tr>
+                            <th>Hiển thị:</th>
+                            <td>
+                                <span th:if="${category.show}" class="badge bg-success">Có</span>
+                                <span th:unless="${category.show}" class="badge bg-danger">Không</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Hiển thị trang chủ:</th>
+                            <td>
+                                <span th:if="${category.subHome}" class="badge bg-success">Có</span>
+                                <span th:unless="${category.subHome}" class="badge bg-danger">Không</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Thứ tự:</th>
+                            <td th:text="${category.sortOrder}"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

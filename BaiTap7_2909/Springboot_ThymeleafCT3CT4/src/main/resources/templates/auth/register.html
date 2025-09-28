@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - ECSHOP Admin</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/css/admin-style.css}" rel="stylesheet"/>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 0;
+        }
+        
+        .register-container {
+            max-width: 500px;
+            width: 100%;
+            padding: 0 20px;
+        }
+        
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        .register-header {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .register-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="20" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        }
+        
+        .register-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .register-header p {
+            opacity: 0.9;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .register-body {
+            padding: 2rem;
+        }
+        
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-floating > .form-control {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 1.2rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-floating > .form-control:focus {
+            background: white;
+            border-color: #51cf66;
+            box-shadow: 0 0 0 0.2rem rgba(81, 207, 102, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .form-floating > .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        
+        .form-floating > .form-control.is-valid {
+            border-color: #51cf66;
+        }
+        
+        .form-floating > label {
+            padding: 1.2rem 1rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+        
+        .btn-register {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(81, 207, 102, 0.3);
+            color: white;
+        }
+        
+        .btn-register:active {
+            transform: translateY(0);
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.25rem;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-weak { background: #dc3545; width: 25%; }
+        .strength-fair { background: #fd7e14; width: 50%; }
+        .strength-good { background: #ffc107; width: 75%; }
+        .strength-strong { background: #28a745; width: 100%; }
+        
+        .requirements {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+        
+        .requirements ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .requirements li {
+            padding: 0.25rem 0;
+            transition: color 0.3s ease;
+        }
+        
+        .requirements li.valid {
+            color: #28a745;
+        }
+        
+        .requirements li.valid::before {
+            content: '✓';
+            margin-right: 0.5rem;
+            color: #28a745;
+        }
+        
+        .requirements li.invalid::before {
+            content: '×';
+            margin-right: 0.5rem;
+            color: #dc3545;
+        }
+        
+        .alert {
+            border-radius: 12px;
+            border: none;
+            margin-bottom: 1.5rem;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .login-link a {
+            color: #51cf66;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .login-link a:hover {
+            color: #40c057;
+            text-decoration: underline;
+        }
+        
+        .terms-checkbox {
+            margin: 1.5rem 0;
+        }
+        
+        .form-check-input:checked {
+            background-color: #51cf66;
+            border-color: #51cf66;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .floating-shapes::before,
+        .floating-shapes::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-shapes::before {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            right: 10%;
+            animation-delay: -2s;
+        }
+        
+        .floating-shapes::after {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            left: 10%;
+            animation-delay: -4s;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .register-container {
+                padding: 0 15px;
+            }
+            
+            .register-body {
+                padding: 1.5rem;
+            }
+            
+            .register-header {
+                padding: 1.5rem;
+            }
+            
+            .register-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes"></div>
+    
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <h1><i class="fas fa-user-plus me-2"></i>Đăng ký</h1>
+                <p>Tạo tài khoản ECSHOP Admin</p>
+            </div>
+            
+            <div class="register-body">
+                <!-- Alert Messages -->
+                <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+                
+                <div th:if="${usernameError}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-user me-2"></i>
+                    <span th:text="${usernameError}"></span>
+                </div>
+                
+                <div th:if="${emailError}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-envelope me-2"></i>
+                    <span th:text="${emailError}"></span>
+                </div>
+                
+                <div th:if="${passwordError}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-lock me-2"></i>
+                    <span th:text="${passwordError}"></span>
+                </div>
+                
+                <!-- Register Form -->
+                <form th:action="@{/register}" method="post" th:object="${user}" id="registerForm" novalidate>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="fullName" th:field="*{fullName}" 
+                                       placeholder="Họ và tên" required>
+                                <label for="fullName">
+                                    <i class="fas fa-id-card me-2"></i>Họ và tên
+                                </label>
+                                <div class="invalid-feedback">Vui lòng nhập họ và tên</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="username" th:field="*{username}" 
+                                       placeholder="Tên đăng nhập" required>
+                                <label for="username">
+                                    <i class="fas fa-user me-2"></i>Tên đăng nhập
+                                </label>
+                                <div class="invalid-feedback">Tên đăng nhập phải từ 3-20 ký tự</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email" th:field="*{email}" 
+                                       placeholder="Email" required>
+                                <label for="email">
+                                    <i class="fas fa-envelope me-2"></i>Email
+                                </label>
+                                <div class="invalid-feedback">Vui lòng nhập email hợp lệ</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}" 
+                                       placeholder="Số điện thoại">
+                                <label for="phoneNumber">
+                                    <i class="fas fa-phone me-2"></i>Số điện thoại
+                                </label>
+                                <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="password" th:field="*{password}" 
+                               placeholder="Mật khẩu" required>
+                        <label for="password">
+                            <i class="fas fa-lock me-2"></i>Mật khẩu
+                        </label>
+                        <div class="invalid-feedback">Mật khẩu phải có ít nhất 6 ký tự</div>
+                        
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <small id="strengthText">Nhập mật khẩu để kiểm tra độ mạnh</small>
+                        </div>
+                        
+                        <div class="requirements">
+                            <ul>
+                                <li id="req-length" class="invalid">Ít nhất 8 ký tự</li>
+                                <li id="req-uppercase" class="invalid">Có chữ hoa</li>
+                                <li id="req-lowercase" class="invalid">Có chữ thường</li>
+                                <li id="req-number" class="invalid">Có số</li>
+                                <li id="req-special" class="invalid">Có ký tự đặc biệt</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
+                               placeholder="Xác nhận mật khẩu" required>
+                        <label for="confirmPassword">
+                            <i class="fas fa-lock me-2"></i>Xác nhận mật khẩu
+                        </label>
+                        <div class="invalid-feedback">Mật khẩu xác nhận không khớp</div>
+                    </div>
+                    
+                    <div class="terms-checkbox">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">
+                                Tôi đồng ý với <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Điều khoản sử dụng</a> 
+                                và <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Chính sách bảo mật</a>
+                            </label>
+                            <div class="invalid-feedback">Bạn phải đồng ý với các điều khoản</div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-register">
+                        <i class="fas fa-user-plus me-2"></i>Tạo tài khoản
+                    </button>
+                </form>
+                
+                <div class="login-link">
+                    <p class="mb-0">Đã có tài khoản? <a th:href="@{/login}">Đăng nhập ngay</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Điều khoản sử dụng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>1. Chấp nhận điều khoản</h6>
+                    <p>Bằng việc sử dụng dịch vụ ECSHOP Admin, bạn đồng ý tuân thủ các điều khoản này.</p>
+                    
+                    <h6>2. Trách nhiệm người dùng</h6>
+                    <p>Người dùng có trách nhiệm bảo mật thông tin tài khoản và sử dụng dịch vụ một cách hợp pháp.</p>
+                    
+                    <h6>3. Quyền riêng tư</h6>
+                    <p>Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn theo chính sách bảo mật.</p>
+                    
+                    <h6>4. Giới hạn trách nhiệm</h6>
+                    <p>ECSHOP không chịu trách nhiệm cho các thiệt hại phát sinh từ việc sử dụng dịch vụ.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Modal -->
+    <div class="modal fade" id="privacyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chính sách bảo mật</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>1. Thu thập thông tin</h6>
+                    <p>Chúng tôi chỉ thu thập thông tin cần thiết để cung cấp dịch vụ tốt nhất.</p>
+                    
+                    <h6>2. Sử dụng thông tin</h6>
+                    <p>Thông tin của bạn chỉ được sử dụng để cải thiện trải nghiệm người dùng.</p>
+                    
+                    <h6>3. Bảo mật thông tin</h6>
+                    <p>Chúng tôi sử dụng các biện pháp bảo mật tiên tiến để bảo vệ dữ liệu của bạn.</p>
+                    
+                    <h6>4. Chia sẻ thông tin</h6>
+                    <p>Chúng tôi không chia sẻ thông tin cá nhân với bên thứ ba mà không có sự đồng ý.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registerForm');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Password strength checker
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strength = checkPasswordStrength(password);
+                updatePasswordStrength(strength);
+                validatePassword(password);
+            });
+            
+            // Confirm password validation
+            confirmPasswordInput.addEventListener('input', function() {
+                validatePasswordMatch();
+            });
+            
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                } else {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tạo tài khoản...';
+                    submitBtn.disabled = true;
+                }
+                form.classList.add('was-validated');
+            });
+            
+            // Real-time validation
+            const inputs = form.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    validateField(this);
+                });
+                
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('is-invalid')) {
+                        validateField(this);
+                    }
+                });
+            });
+            
+            function checkPasswordStrength(password) {
+                let score = 0;
+                
+                // Length check
+                if (password.length >= 8) score += 1;
+                if (password.length >= 12) score += 1;
+                
+                // Character variety
+                if (/[a-z]/.test(password)) score += 1;
+                if (/[A-Z]/.test(password)) score += 1;
+                if (/[0-9]/.test(password)) score += 1;
+                if (/[^A-Za-z0-9]/.test(password)) score += 1;
+                
+                return Math.min(score, 4);
+            }
+            
+            function updatePasswordStrength(strength) {
+                const classes = ['strength-weak', 'strength-fair', 'strength-good', 'strength-strong'];
+                const texts = ['Yếu', 'Trung bình', 'Tốt', 'Mạnh'];
+                
+                strengthFill.className = 'strength-fill';
+                if (strength > 0) {
+                    strengthFill.classList.add(classes[strength - 1]);
+                    strengthText.textContent = `Mật khẩu ${texts[strength - 1]}`;
+                } else {
+                    strengthText.textContent = 'Nhập mật khẩu để kiểm tra độ mạnh';
+                }
+            }
+            
+            function validatePassword(password) {
+                const requirements = {
+                    'req-length': password.length >= 8,
+                    'req-uppercase': /[A-Z]/.test(password),
+                    'req-lowercase': /[a-z]/.test(password),
+                    'req-number': /[0-9]/.test(password),
+                    'req-special': /[^A-Za-z0-9]/.test(password)
+                };
+                
+                Object.keys(requirements).forEach(req => {
+                    const element = document.getElementById(req);
+                    element.className = requirements[req] ? 'valid' : 'invalid';
+                });
+            }
+            
+            function validatePasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                if (confirmPassword && password !== confirmPassword) {
+                    confirmPasswordInput.setCustomValidity('Mật khẩu xác nhận không khớp');
+                    confirmPasswordInput.classList.add('is-invalid');
+                    confirmPasswordInput.classList.remove('is-valid');
+                } else if (confirmPassword) {
+                    confirmPasswordInput.setCustomValidity('');
+                    confirmPasswordInput.classList.remove('is-invalid');
+                    confirmPasswordInput.classList.add('is-valid');
+                }
+            }
+            
+            function validateField(field) {
+                const value = field.value.trim();
+                let isValid = true;
+                
+                switch(field.id) {
+                    case 'fullName':
+                        isValid = value.length >= 2;
+                        break;
+                    case 'username':
+                        isValid = value.length >= 3 && value.length <= 20 && /^[a-zA-Z0-9_]+$/.test(value);
+                        break;
+                    case 'email':
+                        isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+                        break;
+                    case 'phoneNumber':
+                        isValid = !value || /^[0-9+\-\s()]{10,15}$/.test(value);
+                        break;
+                    case 'password':
+                        isValid = value.length >= 6;
+                        break;
+                }
+                
+                if (isValid && field.checkValidity()) {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                } else {
+                    field.classList.add('is-invalid');
+                    field.classList.remove('is-valid');
+                }
+                
+                return isValid;
+            }
+            
+            function validateForm() {
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!validateField(input)) {
+                        isValid = false;
+                    }
+                });
+                
+                // Check password match
+                if (passwordInput.value !== confirmPasswordInput.value) {
+                    isValid = false;
+                }
+                
+                // Check terms agreement
+                const agreeTerms = document.getElementById('agreeTerms');
+                if (!agreeTerms.checked) {
+                    agreeTerms.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    agreeTerms.classList.remove('is-invalid');
+                }
+                
+                return isValid;
+            }
+            
+            // Input animations
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Auto-hide alerts
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.animation = 'slideUp 0.3s ease-out reverse';
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 300);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

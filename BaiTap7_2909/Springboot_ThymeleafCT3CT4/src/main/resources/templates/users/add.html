@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm người dùng</title>
+    <!-- User Management CSS -->
+    <link th:href="@{/css/user-management.css}" rel="stylesheet"/>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-user-plus me-2 text-success"></i>Thêm người dùng mới
+            </h1>
+            <p class="text-muted mb-0">Tạo tài khoản người dùng mới cho hệ thống</p>
+        </div>
+        <a th:href="@{/users}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}"><i class="fas fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a th:href="@{/users}">Quản lý người dùng</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Thêm mới</li>
+        </ol>
+    </nav>
+
+    <!-- Form Card -->
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-gradient-success text-white py-3">
+            <h6 class="m-0 font-weight-bold">
+                <i class="fas fa-user-plus me-2"></i>Thông tin người dùng mới
+            </h6>
+        </div>
+        <div class="card-body p-4">
+            <!-- Alert Messages -->
+            <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+            
+            <div th:if="${usernameError}" class="alert alert-danger" role="alert">
+                <i class="fas fa-user me-2"></i>
+                <span th:text="${usernameError}"></span>
+            </div>
+            
+            <div th:if="${emailError}" class="alert alert-danger" role="alert">
+                <i class="fas fa-envelope me-2"></i>
+                <span th:text="${emailError}"></span>
+            </div>
+
+            <form th:action="@{/users/save}"
+                  th:object="${user}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="needs-validation"
+                  novalidate
+                  id="userForm">
+
+                <div class="row">
+                    <!-- Left Column - Basic Info -->
+                    <div class="col-lg-8">
+                        <!-- Personal Information -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-id-card me-2"></i>Thông tin cá nhân
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" th:field="*{fullName}" class="form-control" 
+                                                   placeholder="Họ và tên" required id="fullName"/>
+                                            <label for="fullName">Họ và tên <span class="text-danger">*</span></label>
+                                            <div class="invalid-feedback">Vui lòng nhập họ và tên</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" th:field="*{username}" class="form-control" 
+                                                   placeholder="Tên đăng nhập" required id="username"/>
+                                            <label for="username">Tên đăng nhập <span class="text-danger">*</span></label>
+                                            <div class="invalid-feedback">Tên đăng nhập phải từ 3-20 ký tự</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="email" th:field="*{email}" class="form-control" 
+                                                   placeholder="Email" required id="email"/>
+                                            <label for="email">Email <span class="text-danger">*</span></label>
+                                            <div class="invalid-feedback">Vui lòng nhập email hợp lệ</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="tel" th:field="*{phoneNumber}" class="form-control" 
+                                                   placeholder="Số điện thoại" id="phoneNumber"/>
+                                            <label for="phoneNumber">Số điện thoại</label>
+                                            <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Information -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-key me-2"></i>Thông tin tài khoản
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="password" th:field="*{password}" class="form-control" 
+                                                   placeholder="Mật khẩu" required id="password"/>
+                                            <label for="password">Mật khẩu <span class="text-danger">*</span></label>
+                                            <div class="invalid-feedback">Mật khẩu phải có ít nhất 6 ký tự</div>
+                                            
+                                            <div class="password-strength mt-2">
+                                                <div class="strength-bar">
+                                                    <div class="strength-fill" id="strengthFill"></div>
+                                                </div>
+                                                <small id="strengthText">Nhập mật khẩu để kiểm tra độ mạnh</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="password" class="form-control" 
+                                                   placeholder="Xác nhận mật khẩu" required id="confirmPassword"/>
+                                            <label for="confirmPassword">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                                            <div class="invalid-feedback">Mật khẩu xác nhận không khớp</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-cogs me-2"></i>Cài đặt tài khoản
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-user-shield fa-2x text-primary mb-3"></i>
+                                                <h6 class="card-title">Vai trò</h6>
+                                                <select th:field="*{role}" class="form-select" required>
+                                                    <option value="">Chọn vai trò</option>
+                                                    <option th:each="role : ${roles}" 
+                                                            th:value="${role}" 
+                                                            th:text="${role == T(vn.hcmute.entities.User.Role).ADMIN ? 'Quản trị viên' : 
+                                                                     role == T(vn.hcmute.entities.User.Role).MANAGER ? 'Quản lý' : 'Người dùng'}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-toggle-on fa-2x text-success mb-3"></i>
+                                                <h6 class="card-title">Trạng thái hoạt động</h6>
+                                                <div class="form-check form-switch d-flex justify-content-center">
+                                                    <input type="checkbox" th:field="*{active}" class="form-check-input" 
+                                                           id="chkActive" style="transform: scale(1.2);" checked/>
+                                                </div>
+                                                <label class="form-check-label mt-2" for="chkActive">
+                                                    <span class="active-text text-success">Hoạt động</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-check-circle fa-2x text-info mb-3"></i>
+                                                <h6 class="card-title">Xác thực email</h6>
+                                                <div class="form-check form-switch d-flex justify-content-center">
+                                                    <input type="checkbox" th:field="*{verified}" class="form-check-input" 
+                                                           id="chkVerified" style="transform: scale(1.2);" checked/>
+                                                </div>
+                                                <label class="form-check-label mt-2" for="chkVerified">
+                                                    <span class="verified-text text-success">Đã xác thực</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Avatar -->
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-user-circle me-2"></i>Avatar
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="avatar-preview" id="avatarPreview">
+                                    <div class="text-center text-muted">
+                                        <i class="fas fa-user-circle fa-5x mb-3"></i>
+                                        <h6>Kéo thả hoặc click để chọn avatar</h6>
+                                        <small>Định dạng: JPG, PNG (tối đa 2MB)</small>
+                                    </div>
+                                </div>
+                                <input type="file" name="avatarFile" id="avatarInput" class="form-control mt-3" 
+                                       accept="image/*" style="display: none;"/>
+                                <button type="button" class="btn btn-outline-primary w-100 mt-2" id="selectAvatarBtn">
+                                    <i class="fas fa-folder-open me-1"></i>Chọn avatar từ máy tính
+                                </button>
+                                <button type="button" class="btn btn-outline-danger w-100 mt-2 d-none" id="removeAvatarBtn">
+                                    <i class="fas fa-times me-1"></i>Xóa avatar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <hr class="my-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="saveAndNew">
+                        <label class="form-check-label" for="saveAndNew">
+                            Lưu và thêm người dùng khác
+                        </label>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+                            <i class="fas fa-times me-1"></i>Hủy
+                        </button>
+                        <button type="reset" class="btn btn-outline-warning">
+                            <i class="fas fa-undo me-1"></i>Reset
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i>Tạo tài khoản
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tips Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-info">
+                <i class="fas fa-lightbulb me-2"></i>Gợi ý
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>Tên đăng nhập phải duy nhất trong hệ thống</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Email phải hợp lệ và chưa được sử dụng</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Mật khẩu nên có ít nhất 8 ký tự</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-info text-info me-2"></i>Avatar nên có tỷ lệ vuông (1:1)</li>
+                        <li><i class="fas fa-info text-info me-2"></i>Vai trò Admin có quyền cao nhất</li>
+                        <li><i class="fas fa-info text-info me-2"></i>Có thể chỉnh sửa thông tin sau khi tạo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatarInput = document.getElementById('avatarInput');
+            const avatarPreview = document.getElementById('avatarPreview');
+            const selectAvatarBtn = document.getElementById('selectAvatarBtn');
+            const removeAvatarBtn = document.getElementById('removeAvatarBtn');
+            const form = document.getElementById('userForm');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            
+            // Avatar functionality
+            selectAvatarBtn.addEventListener('click', () => avatarInput.click());
+            avatarPreview.addEventListener('click', () => avatarInput.click());
+            
+            // Drag and drop for avatar
+            avatarPreview.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#007bff';
+                this.style.backgroundColor = '#f8f9ff';
+            });
+            
+            avatarPreview.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ddd';
+                this.style.backgroundColor = '#f8f9fa';
+            });
+            
+            avatarPreview.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ddd';
+                this.style.backgroundColor = '#f8f9fa';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleAvatarSelect(files[0]);
+                }
+            });
+            
+            avatarInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    handleAvatarSelect(this.files[0]);
+                }
+            });
+            
+            function handleAvatarSelect(file) {
+                if (!file.type.startsWith('image/')) {
+                    ECSHOP.showNotification('Vui lòng chọn file hình ảnh!', 'error');
+                    return;
+                }
+                
+                if (file.size > 2 * 1024 * 1024) {
+                    ECSHOP.showNotification('Kích thước file không được vượt quá 2MB!', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.innerHTML = `
+                        <img src="${e.target.result}" alt="Avatar Preview" 
+                             style="max-width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px;">
+                    `;
+                    removeAvatarBtn.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            removeAvatarBtn.addEventListener('click', function() {
+                avatarInput.value = '';
+                avatarPreview.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="fas fa-user-circle fa-5x mb-3"></i>
+                        <h6>Kéo thả hoặc click để chọn avatar</h6>
+                        <small>Định dạng: JPG, PNG (tối đa 2MB)</small>
+                    </div>
+                `;
+                this.classList.add('d-none');
+            });
+            
+            // Password strength checker
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strength = checkPasswordStrength(password);
+                updatePasswordStrength(strength);
+            });
+            
+            // Confirm password validation
+            confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+            
+            function checkPasswordStrength(password) {
+                let score = 0;
+                
+                if (password.length >= 8) score += 1;
+                if (password.length >= 12) score += 1;
+                if (/[a-z]/.test(password)) score += 1;
+                if (/[A-Z]/.test(password)) score += 1;
+                if (/[0-9]/.test(password)) score += 1;
+                if (/[^A-Za-z0-9]/.test(password)) score += 1;
+                
+                return Math.min(score, 4);
+            }
+            
+            function updatePasswordStrength(strength) {
+                const classes = ['strength-weak', 'strength-fair', 'strength-good', 'strength-strong'];
+                const texts = ['Yếu', 'Trung bình', 'Tốt', 'Mạnh'];
+                
+                strengthFill.className = 'strength-fill';
+                if (strength > 0) {
+                    strengthFill.classList.add(classes[strength - 1]);
+                    strengthText.textContent = `Mật khẩu ${texts[strength - 1]}`;
+                } else {
+                    strengthText.textContent = 'Nhập mật khẩu để kiểm tra độ mạnh';
+                }
+            }
+            
+            function validatePasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                if (confirmPassword && password !== confirmPassword) {
+                    confirmPasswordInput.setCustomValidity('Mật khẩu xác nhận không khớp');
+                    confirmPasswordInput.classList.add('is-invalid');
+                    confirmPasswordInput.classList.remove('is-valid');
+                } else if (confirmPassword) {
+                    confirmPasswordInput.setCustomValidity('');
+                    confirmPasswordInput.classList.remove('is-invalid');
+                    confirmPasswordInput.classList.add('is-valid');
+                }
+            }
+            
+            // Toggle switches functionality
+            const activeSwitch = document.getElementById('chkActive');
+            const verifiedSwitch = document.getElementById('chkVerified');
+            
+            activeSwitch.addEventListener('change', function() {
+                const activeText = this.closest('.card-body').querySelector('.active-text');
+                if (this.checked) {
+                    activeText.textContent = 'Hoạt động';
+                    activeText.className = 'active-text text-success';
+                } else {
+                    activeText.textContent = 'Không hoạt động';
+                    activeText.className = 'active-text text-danger';
+                }
+            });
+            
+            verifiedSwitch.addEventListener('change', function() {
+                const verifiedText = this.closest('.card-body').querySelector('.verified-text');
+                if (this.checked) {
+                    verifiedText.textContent = 'Đã xác thực';
+                    verifiedText.className = 'verified-text text-success';
+                } else {
+                    verifiedText.textContent = 'Chưa xác thực';
+                    verifiedText.className = 'verified-text text-danger';
+                }
+            });
+            
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                if (!form.checkValidity() || !validatePasswordMatch()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const firstInvalid = form.querySelector(':invalid');
+                    if (firstInvalid) {
+                        firstInvalid.focus();
+                        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Đang tạo tài khoản...';
+                    submitBtn.disabled = true;
+                }
+                form.classList.add('was-validated');
+            });
+            
+            // Real-time validation
+            const inputs = form.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    validateField(this);
+                });
+                
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('is-invalid')) {
+                        validateField(this);
+                    }
+                });
+            });
+            
+            function validateField(field) {
+                const value = field.value.trim();
+                let isValid = true;
+                
+                switch(field.id) {
+                    case 'fullName':
+                        isValid = value.length >= 2;
+                        break;
+                    case 'username':
+                        isValid = value.length >= 3 && value.length <= 20 && /^[a-zA-Z0-9_]+$/.test(value);
+                        break;
+                    case 'email':
+                        isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+                        break;
+                    case 'phoneNumber':
+                        isValid = !value || /^[0-9+\-\s()]{10,15}$/.test(value);
+                        break;
+                    case 'password':
+                        isValid = value.length >= 6;
+                        break;
+                }
+                
+                if (isValid && field.checkValidity()) {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                } else {
+                    field.classList.add('is-invalid');
+                    field.classList.remove('is-valid');
+                }
+                
+                return isValid;
+            }
+        });
+    </script>
+    
+    <!-- User Management JavaScript -->
+    <script th:src="@{/js/user-management.js}"></script>
+
+    <style>
+        .avatar-preview {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #f8f9fa;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .avatar-preview:hover {
+            border-color: #007bff;
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.25rem;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-weak { background: #dc3545; width: 25%; }
+        .strength-fair { background: #fd7e14; width: 50%; }
+        .strength-good { background: #ffc107; width: 75%; }
+        .strength-strong { background: #28a745; width: 100%; }
+        
+        .form-switch .form-check-input:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+    </style>
+</main>
+</body>
+</html>

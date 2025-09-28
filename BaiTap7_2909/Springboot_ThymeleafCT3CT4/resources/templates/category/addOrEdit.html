@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+  <body>
+    <div th:fragment="content">
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a th:href="@{/dashboard}">
+              <i class="fas fa-home me-1"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="breadcrumb-item">
+            <a th:href="@{/categories}">
+              <i class="fas fa-tags me-1"></i>
+              Danh mục
+            </a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            <span th:if="${category.categoryId == null}">
+              <i class="fas fa-plus me-1"></i>
+              Thêm mới
+            </span>
+            <span th:unless="${category.categoryId == null}">
+              <i class="fas fa-edit me-1"></i>
+              Chỉnh sửa
+            </span>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Header -->
+      <div class="row mb-4">
+        <div class="col-12 d-flex align-items-center">
+          <div class="page-icon me-3"><i class="fas fa-tags"></i></div>
+          <div>
+            <h1 class="page-title mb-1">
+              <span th:if="${category.categoryId == null}">Thêm danh mục mới</span>
+              <span th:unless="${category.categoryId == null}">Chỉnh sửa danh mục</span>
+            </h1>
+            <p class="page-subtitle mb-0">
+              <span th:if="${category.categoryId == null}">Tạo danh mục sản phẩm mới trong hệ thống</span>
+              <span th:unless="${category.categoryId == null}">Cập nhật thông tin danh mục hiện có</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Card -->
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+          <div class="card form-card">
+            <div class="card-header">
+              <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Thông tin danh mục</h5>
+            </div>
+            <div class="card-body">
+              <form th:action="@{/categories/save}" th:object="${category}"
+                    method="post" class="needs-validation" novalidate enctype="multipart/form-data">
+                <input type="hidden" th:field="*{categoryId}" />
+
+                <!-- Category Name -->
+                <div class="mb-4">
+                  <label for="categoryName" class="form-label required">
+                    <i class="fas fa-tag me-2"></i>Tên danh mục
+                  </label>
+                  <input type="text" class="form-control form-control-lg" id="categoryName"
+                         th:field="*{categoryName}" placeholder="Nhập tên danh mục..." required maxlength="255" />
+                  <div class="invalid-feedback">Vui lòng nhập tên danh mục.</div>
+                  <div class="form-text"><i class="fas fa-info-circle me-1"></i>Tên danh mục sẽ hiển thị trên website và trong hệ thống quản lý</div>
+                </div>
+
+                <!-- Category Image (Upload) -->
+                <div class="mb-4">
+                  <label class="form-label"><i class="fas fa-image me-2"></i>Hình ảnh danh mục</label>
+
+                  <input type="hidden" name="existingImage" th:value="${category.categoryImage}" />
+                  <input type="hidden" name="removeImage" id="removeImage" value="false" />
+
+                  <!-- Current Image Preview -->
+                  <div th:if="${category.categoryImage != null and !#strings.isEmpty(category.categoryImage)}" class="mb-3 current-image-preview">
+                    <label class="form-label text-muted">Hình ảnh hiện tại:</label>
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                      <img th:src="${category.categoryImage}" th:alt="${category.categoryName}"
+                           class="img-thumbnail" style="max-width:200px;max-height:200px;object-fit:cover;" />
+                      <button type="button" class="btn btn-sm btn-outline-danger" onclick="markImageForRemoval()">
+                        <i class="fas fa-times"></i> Xóa
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- File chooser -->
+                  <div class="input-group">
+                    <input type="file" class="form-control" id="categoryImageFile" name="imageFile"
+                           accept="image/*" onchange="previewSelectedImage(event)" />
+                    <label class="input-group-text" for="categoryImageFile">
+                      <i class="fas fa-upload me-2"></i>Chọn ảnh
+                    </label>
+                  </div>
+
+                  <!-- New image preview -->
+                  <div id="imagePreview" class="mt-3" style="display:none">
+                    <label class="form-label text-muted">Xem trước ảnh mới:</label>
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                      <img id="previewImg" class="img-thumbnail" style="max-width:200px;max-height:200px;object-fit:cover;" />
+                      <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelectedImage()">
+                        <i class="fas fa-undo"></i> Hủy ảnh mới
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="form-text"><i class="fas fa-info-circle me-1"></i>Tải lên file ảnh (PNG, JPG) dung lượng tối đa 5MB.</div>
+                </div>
+
+                <!-- Optional Description (not bound) -->
+                <div class="mb-4">
+                  <label for="categoryDescription" class="form-label"><i class="fas fa-align-left me-2"></i>Mô tả danh mục</label>
+                  <textarea class="form-control" id="categoryDescription" rows="4" placeholder="Nhập mô tả chi tiết về danh mục..." maxlength="1000"></textarea>
+                </div>
+
+                <!-- Status (UI only) -->
+                <div class="mb-4">
+                  <label class="form-label"><i class="fas fa-toggle-on me-2"></i>Trạng thái</label>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="categoryStatus" checked />
+                    <label class="form-check-label" for="categoryStatus"><span class="status-text">Hoạt động</span></label>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-flex gap-2">
+                  <a th:href="@{/categories}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+                  <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Lưu</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        .form-card .card-header { background: rgba(99,102,241,.1); }
+        .page-title { font-weight: 700; }
+        .required::after { content: "*"; color: #ef4444; margin-left: 4px; }
+      </style>
+
+      <script>
+        // Preview ảnh upload, xóa ảnh hiện tại, hủy ảnh mới
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const removeImageField = document.getElementById('removeImage');
+        const categoryImageFile = document.getElementById('categoryImageFile');
+
+        function previewSelectedImage(event) {
+          const file = event.target.files[0];
+          if (!file) { if (imagePreview) imagePreview.style.display = 'none'; return; }
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            if (previewImg && imagePreview) { previewImg.src = e.target.result; imagePreview.style.display = 'block'; }
+          };
+          reader.readAsDataURL(file);
+          if (removeImageField) removeImageField.value = 'false';
+        }
+
+        function clearSelectedImage() {
+          if (categoryImageFile) categoryImageFile.value = '';
+          if (imagePreview) imagePreview.style.display = 'none';
+        }
+
+        function markImageForRemoval() {
+          if (removeImageField) removeImageField.value = 'true';
+          if (categoryImageFile) categoryImageFile.value = '';
+          const currentPreview = document.querySelector('.current-image-preview');
+          if (currentPreview) currentPreview.style.display = 'none';
+          if (imagePreview) imagePreview.style.display = 'none';
+        }
+
+        // Toggle status label
+        document.getElementById('categoryStatus').addEventListener('change', function(){
+          const statusText = document.querySelector('.status-text');
+          if (this.checked) { statusText.textContent = 'Hoạt động'; statusText.style.color = 'var(--success-color)'; }
+          else { statusText.textContent = 'Tạm dừng'; statusText.style.color = 'var(--warning-color)'; }
+        });
+      </script>
+    </div>
+  </body>
+</html>
+

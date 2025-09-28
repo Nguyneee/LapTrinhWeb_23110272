@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý danh mục</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-folder me-2 text-primary"></i>Quản lý danh mục
+            </h1>
+            <p class="text-muted mb-0">Quản lý các danh mục sản phẩm trong hệ thống</p>
+        </div>
+        <a th:href="@{/categories/add}" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus-circle fa-sm text-white-50 me-1"></i> Thêm danh mục mới
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tổng danh mục</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${categories.size()}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-folder fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Đang hiển thị</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${categories.stream().filter(c -> c.show).count()}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-eye fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Trang chủ</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${categories.stream().filter(c -> c.subHome).count()}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-home fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 interactive-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Đang ẩn</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${categories.stream().filter(c -> !c.show).count()}">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-eye-slash fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}"><i class="fas fa-home"></i></a></li>
+            <li class="breadcrumb-item active" aria-current="page">Danh mục sản phẩm</li>
+        </ol>
+    </nav>
+
+    <!-- Search Box -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-search me-1"></i> Tìm kiếm & Lọc
+            </h6>
+            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="false">
+                <i class="fas fa-filter"></i>
+            </button>
+        </div>
+        <div class="collapse show" id="searchCollapse">
+            <div class="card-body">
+                <form th:action="@{/categories}" method="get" class="row g-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" name="keyword" th:value="${keyword}" class="form-control" 
+                                   placeholder="Nhập tên danh mục để tìm kiếm...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="status" class="form-select">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="show">Đang hiển thị</option>
+                            <option value="hide">Đang ẩn</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid gap-2 d-md-flex">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search me-1"></i>Tìm kiếm
+                            </button>
+                            <a th:href="@{/categories}" class="btn btn-outline-secondary">
+                                <i class="fas fa-sync-alt me-1"></i>Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-table me-1"></i> Danh sách danh mục
+            </h6>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-primary me-2" th:text="${categories.size() + ' mục'}"></span>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-download me-1"></i>Xuất Excel</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-print me-1"></i>In danh sách</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-upload me-1"></i>Nhập từ Excel</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="categoryTable">
+                    <thead class="table-dark">
+                    <tr>
+                        <th class="text-center" style="width: 60px;">
+                            <input type="checkbox" id="selectAll" class="form-check-input">
+                        </th>
+                        <th class="text-center" style="width: 50px;">#</th>
+                        <th>Tên danh mục</th>
+                        <th class="text-center" style="width: 100px;">Hình ảnh</th>
+                        <th class="text-center" style="width: 80px;">Hiển thị</th>
+                        <th class="text-center" style="width: 120px;">Trang chủ</th>
+                        <th class="text-center" style="width: 80px;">Thứ tự</th>
+                        <th class="text-center" style="width: 200px;">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="c, stat : ${categories}" class="category-row">
+                        <!-- Checkbox -->
+                        <td class="text-center">
+                            <input type="checkbox" class="form-check-input category-checkbox" th:value="${c.id}">
+                        </td>
+                        
+                        <!-- STT -->
+                        <td class="text-center">
+                            <span class="badge bg-secondary" th:text="${stat.count}"></span>
+                        </td>
+                        
+                        <!-- Tên danh mục -->
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <a th:href="@{/categories/view/{id}(id=${c.id})}" 
+                                       class="text-decoration-none fw-bold category-name" 
+                                       th:text="${c.name}"></a>
+                                    <div class="text-muted small" th:text="'ID: ' + ${c.id}"></div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Hình ảnh -->
+                        <td class="text-center">
+                            <div class="image-container">
+                                <img th:if="${c.image != null}" th:src="@{'/uploads/' + ${c.image}}" 
+                                     class="category-image img-thumbnail" 
+                                     style="height: 50px; width: 50px; object-fit: cover; cursor: pointer;" 
+                                     alt="Category Image"
+                                     data-bs-toggle="modal" data-bs-target="#imageModal"
+                                     th:onclick="'showImageModal(\'' + @{'/uploads/' + ${c.image}} + '\', \'' + ${c.name} + '\')'">
+                                <div th:if="${c.image == null}" class="d-flex align-items-center justify-content-center bg-light rounded" 
+                                     style="height: 50px; width: 50px;">
+                                    <i class="fas fa-image text-muted"></i>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Hiển thị -->
+                        <td class="text-center">
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input type="checkbox" th:checked="${c.show}" class="form-check-input status-toggle" 
+                                       th:data-id="${c.id}" style="cursor: pointer;">
+                            </div>
+                        </td>
+
+                        <!-- Sub Home -->
+                        <td class="text-center">
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input type="checkbox" th:checked="${c.subHome}" class="form-check-input home-toggle" 
+                                       th:data-id="${c.id}" style="cursor: pointer;">
+                            </div>
+                        </td>
+
+                        <!-- Sort -->
+                        <td class="text-center">
+                            <input type="number" th:value="${c.sortOrder}" class="form-control text-center sort-input" 
+                                   style="width: 70px; margin: 0 auto;" th:data-id="${c.id}" min="1">
+                        </td>
+
+                        <!-- Thao tác -->
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a th:href="@{/categories/view/{id}(id=${c.id})}" 
+                                   class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a th:href="@{/categories/edit/{id}(id=${c.id})}" 
+                                   class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger delete-btn" 
+                                        th:data-id="${c.id}" th:data-name="${c.name}"
+                                        data-bs-toggle="tooltip" title="Xóa">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${categories.empty}">
+                        <td colspan="8" class="text-center py-5">
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle fa-2x mb-3 d-block"></i>
+                                <h5>Không tìm thấy danh mục nào</h5>
+                                <p class="mb-3">Hãy thêm danh mục đầu tiên để bắt đầu quản lý sản phẩm</p>
+                                <a th:href="@{/categories/add}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>Thêm danh mục ngay
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Bulk Actions -->
+            <div class="bulk-actions d-none border-top pt-3 mt-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-muted">
+                        <span id="selectedCount">0</span> mục được chọn
+                    </span>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-success" id="bulkShow">
+                            <i class="fas fa-eye me-1"></i>Hiển thị
+                        </button>
+                        <button class="btn btn-sm btn-warning" id="bulkHide">
+                            <i class="fas fa-eye-slash me-1"></i>Ẩn
+                        </button>
+                        <button class="btn btn-sm btn-danger" id="bulkDelete">
+                            <i class="fas fa-trash me-1"></i>Xóa
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+                        <!-- Sub Home -->
+                        <td class="text-center">
+                            <span th:if="${c.subHome}" class="badge bg-success"><i class="fas fa-check"></i></span>
+                            <span th:unless="${c.subHome}" class="badge bg-danger"><i class="fas fa-times"></i></span>
+                        </td>
+
+                        <!-- Sort -->
+                        <td class="text-center">
+                            <span class="badge bg-info" th:text="${c.sortOrder}"></span>
+                        </td>
+
+                        <!-- Thao tác -->
+                        <td class="text-center">
+                            <a th:href="@{/categories/view/{id}(id=${c.id})}" class="btn btn-sm btn-info mb-1 mb-md-0">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a th:href="@{/categories/edit/{id}(id=${c.id})}" class="btn btn-sm btn-warning mb-1 mb-md-0">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:href="@{/categories/delete/{id}(id=${c.id})}" 
+                               onclick="return confirm('Bạn có chắc muốn xóa danh mục này?');"
+                               class="btn btn-sm btn-danger mb-1 mb-md-0">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${categories.empty}">
+                        <td colspan="7" class="text-center py-4">
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i> Không tìm thấy danh mục nào
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}" class="d-flex justify-content-between align-items-center mt-4">
+                <div class="showing-info">
+                    <small class="text-muted">
+                        Hiển thị <span th:text="${(currentPage * 5) + 1}">1</span> 
+                        đến <span th:text="${Math.min((currentPage + 1) * 5, totalElements)}">5</span> 
+                        trong tổng số <span th:text="${totalElements}">0</span> mục
+                    </small>
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination mb-0">
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/categories(page=0, size=5, keyword=${keyword})}" aria-label="First">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/categories(page=${currentPage - 1}, size=5, keyword=${keyword})}" aria-label="Previous">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                        
+                        <!-- Page numbers -->
+                        <li class="page-item" th:each="i : ${#numbers.sequence(Math.max(0, currentPage - 2), Math.min(totalPages - 1, currentPage + 2))}" 
+                            th:classappend="${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/categories(page=${i}, size=5, keyword=${keyword})}" th:text="${i + 1}"></a>
+                        </li>
+                        
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/categories(page=${currentPage + 1}, size=5, keyword=${keyword})}" aria-label="Next">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/categories(page=${totalPages - 1}, size=5, keyword=${keyword})}" aria-label="Last">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Hình ảnh danh mục</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Category Image" class="img-fluid rounded">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>Xác nhận xóa
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa danh mục <strong id="deleteItemName"></strong> không?</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Hành động này không thể hoàn tác!
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <a id="confirmDeleteBtn" href="#" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Xóa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional JavaScript for enhanced functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select all functionality
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+            const bulkActions = document.querySelector('.bulk-actions');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            selectAllCheckbox.addEventListener('change', function() {
+                categoryCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateBulkActions();
+            });
+            
+            categoryCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateBulkActions);
+            });
+            
+            function updateBulkActions() {
+                const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+                const count = checkedBoxes.length;
+                
+                selectedCount.textContent = count;
+                
+                if (count > 0) {
+                    bulkActions.classList.remove('d-none');
+                } else {
+                    bulkActions.classList.add('d-none');
+                }
+                
+                // Update select all checkbox state
+                selectAllCheckbox.checked = count === categoryCheckboxes.length;
+                selectAllCheckbox.indeterminate = count > 0 && count < categoryCheckboxes.length;
+            }
+            
+            // Image modal functionality
+            window.showImageModal = function(imageSrc, categoryName) {
+                document.getElementById('modalImage').src = imageSrc;
+                document.getElementById('imageModalLabel').textContent = 'Hình ảnh: ' + categoryName;
+            };
+            
+            // Delete modal functionality
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    const name = this.dataset.name;
+                    
+                    document.getElementById('deleteItemName').textContent = name;
+                    document.getElementById('confirmDeleteBtn').href = '/categories/delete/' + id;
+                    
+                    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+                });
+            });
+            
+            // Status toggle functionality
+            const statusToggles = document.querySelectorAll('.status-toggle');
+            statusToggles.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const id = this.dataset.id;
+                    const show = this.checked;
+                    
+                    // Here you would typically make an AJAX call to update the status
+                    console.log('Update category', id, 'show status to', show);
+                    
+                    // Add loading state
+                    this.disabled = true;
+                    setTimeout(() => {
+                        this.disabled = false;
+                    }, 500);
+                });
+            });
+            
+            // Home toggle functionality
+            const homeToggles = document.querySelectorAll('.home-toggle');
+            homeToggles.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const id = this.dataset.id;
+                    const subHome = this.checked;
+                    
+                    console.log('Update category', id, 'subHome status to', subHome);
+                    
+                    this.disabled = true;
+                    setTimeout(() => {
+                        this.disabled = false;
+                    }, 500);
+                });
+            });
+            
+            // Sort order functionality
+            const sortInputs = document.querySelectorAll('.sort-input');
+            sortInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const id = this.dataset.id;
+                    const sortOrder = this.value;
+                    
+                    console.log('Update category', id, 'sort order to', sortOrder);
+                    
+                    // Add visual feedback
+                    this.style.backgroundColor = '#fff3cd';
+                    setTimeout(() => {
+                        this.style.backgroundColor = '';
+                    }, 1000);
+                });
+            });
+            
+            // Bulk actions
+            document.getElementById('bulkShow').addEventListener('click', function() {
+                const checkedIds = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+                console.log('Bulk show categories:', checkedIds);
+            });
+            
+            document.getElementById('bulkHide').addEventListener('click', function() {
+                const checkedIds = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+                console.log('Bulk hide categories:', checkedIds);
+            });
+            
+            document.getElementById('bulkDelete').addEventListener('click', function() {
+                const checkedIds = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+                if (confirm('Bạn có chắc chắn muốn xóa ' + checkedIds.length + ' danh mục đã chọn?')) {
+                    console.log('Bulk delete categories:', checkedIds);
+                }
+            });
+        });
+    </script>
+</main>
+</body>
+</html>
