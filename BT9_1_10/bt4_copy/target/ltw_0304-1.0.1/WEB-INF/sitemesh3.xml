@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+    <!-- Áp dụng decorator (mặc định SiteMesh 3 tìm trong /WEB-INF/decorators) -->
+    <mapping path="/views/*" decorator="web.jsp"/>
+    <mapping path="/admin/*" decorator="admin.jsp"/>
+    <mapping path="/manager/*" decorator="web.jsp"/>
+    <mapping path="/profile/*" decorator="web.jsp"/>
+    
+    <!-- Bỏ qua các static resources -->
+    <mapping path="/css/*" exclude="true"/>
+    <mapping path="/js/*" exclude="true"/>
+    <mapping path="/images/*" exclude="true"/>
+    <mapping path="/uploads/*" exclude="true"/>
+    <mapping path="/api/*" exclude="true"/>
+    <mapping path="*.css" exclude="true"/>
+    <mapping path="*.js" exclude="true"/>
+    <mapping path="*.jpg" exclude="true"/>
+    <mapping path="*.png" exclude="true"/>
+    <mapping path="*.gif" exclude="true"/>
+</sitemesh>
