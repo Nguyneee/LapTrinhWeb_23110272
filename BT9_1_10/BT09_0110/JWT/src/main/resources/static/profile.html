@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/app.css" />
+    <script defer src="/mainjs.js"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", async () => {
+        const accessToken = localStorage.getItem("accessToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+        const info = document.getElementById("info");
+        const output = document.getElementById("output");
+        const username = localStorage.getItem("username") || "Unknown";
+        info.textContent = `Xin chào, ${username}!`;
+
+        const setOutput = (value) => {
+          try {
+            const parsed = typeof value === "string" ? JSON.parse(value) : value;
+            output.textContent = JSON.stringify(parsed, null, 2);
+          } catch {
+            output.textContent = value;
+          }
+        };
+
+        document.getElementById("btnUser").onclick = async () => {
+          setOutput(await window.API.get("/api/test/user"));
+        };
+        document.getElementById("btnAdmin").onclick = async () => {
+          setOutput(await window.API.get("/api/test/admin"));
+        };
+        document.getElementById("btnPublic").onclick = async () => {
+          setOutput(await window.API.get("/api/test/public", false));
+        };
+        document.getElementById("btnRefresh").onclick = async () => {
+          const res = await window.API.refresh(refreshToken);
+          localStorage.setItem("accessToken", res.accessToken);
+          localStorage.setItem("refreshToken", res.refreshToken);
+          setOutput("Đã refresh token thành công.");
+        };
+        document.getElementById("btnLogout").onclick = () => {
+          localStorage.clear();
+          window.location.href = "/login.html";
+        };
+      });
+    </script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="page-header">
+        <span class="badge">
+          <span class="badge__dot"></span>
+          Secured Area
+        </span>
+        <h1 class="page-header__title">Hồ sơ người dùng</h1>
+        <p class="page-header__subtitle">
+          Thực hiện các lời gọi API bảo vệ bởi JWT và làm mới token trực tiếp từ giao diện web.
+        </p>
+      </header>
+
+      <section class="card">
+        <div class="card__header">
+          <h2 class="card__title" id="info">Xin chào!</h2>
+          <p class="card__subtitle">
+            Chọn một hành động bên dưới để trải nghiệm các endpoint phân quyền theo vai trò.
+          </p>
+        </div>
+
+        <div class="grid-actions">
+          <button id="btnUser" class="btn btn--primary">Gọi /api/test/user</button>
+          <button id="btnAdmin" class="btn btn--ghost">Gọi /api/test/admin</button>
+          <button id="btnPublic" class="btn btn--ghost">Gọi /api/test/public</button>
+          <button id="btnRefresh" class="btn btn--ghost">Refresh token</button>
+          <button id="btnLogout" class="btn btn--ghost">Đăng xuất</button>
+        </div>
+
+        <div>
+          <h3 class="card__title" style="font-size: 1.05rem; margin-bottom: 8px;">Kết quả phản hồi</h3>
+          <pre id="output" class="response-panel">Click vào một hành động để xem response...</pre>
+        </div>
+
+        <nav class="nav-links">
+          <a class="nav-link" href="/login.html">Quay lại trang đăng nhập</a>
+          <a class="nav-link" href="/swagger-ui/index.html" target="_blank">Swagger UI</a>
+          <a class="nav-link" href="/api/test/public" target="_blank">API công khai</a>
+        </nav>
+      </section>
+
+      <footer>Spring Boot 3 · Spring Security 6 · JWT Demo</footer>
+    </div>
+  </body>
+</html>

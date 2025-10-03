@@ -1,0 +1,9 @@
+{
+    "maven.view": "flat", 
+    "java.project.sourcePaths": [
+        "src/main/java", 
+        "src/test/java"
+    ], 
+    "java.import.gradle.enabled": false, 
+    "java.configuration.updateBuildConfiguration": "automatic"
+}

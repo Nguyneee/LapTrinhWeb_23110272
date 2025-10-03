@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/app.css" />
+    <script defer src="/mainjs.js"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.getElementById("loginForm");
+        const message = document.getElementById("message");
+
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          message.className = "message";
+          message.textContent = "";
+          const usernameOrEmail = document
+            .getElementById("usernameOrEmail")
+            .value.trim();
+          const password = document.getElementById("password").value.trim();
+          try {
+            const data = await window.API.login({ usernameOrEmail, password });
+            localStorage.setItem("accessToken", data.accessToken);
+            localStorage.setItem("refreshToken", data.refreshToken);
+            localStorage.setItem("username", data.username);
+            message.className = "message message--success is-visible";
+            message.textContent = "Login successful. Redirecting...";
+            setTimeout(() => {
+              window.location.href = "/profile.html";
+            }, 700);
+          } catch (err) {
+            message.className = "message message--error is-visible";
+            message.textContent = err.message || "Login failed";
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="page-header">
+        <span class="badge">
+          <span class="badge__dot"></span>
+          JWT Demo Portal
+        </span>
+        <h1 class="page-header__title">Đăng nhập tài khoản</h1>
+        <p class="page-header__subtitle">
+          Sử dụng username hoặc email để truy cập dashboard bảo mật Spring Boot 3.
+        </p>
+      </header>
+
+      <section class="card">
+        <div class="card__header">
+          <h2 class="card__title">Thông tin đăng nhập</h2>
+          <p class="card__subtitle">
+            Nhập thông tin của bạn. Bạn có thể sử dụng các tài khoản mẫu ở bên dưới để thử nghiệm.
+          </p>
+        </div>
+
+        <form id="loginForm" class="form-grid">
+          <label class="label" for="usernameOrEmail">
+            Username hoặc Email
+            <input
+              id="usernameOrEmail"
+              class="input"
+              placeholder="Ví dụ: admin hoặc admin@example.com"
+              autocomplete="username"
+              required
+            />
+          </label>
+
+          <label class="label" for="password">
+            Mật khẩu
+            <input
+              id="password"
+              class="input"
+              type="password"
+              placeholder="Nhập password"
+              autocomplete="current-password"
+              required
+            />
+          </label>
+
+          <button type="submit" class="btn btn--primary">Đăng nhập</button>
+        </form>
+
+        <div id="message" class="message"></div>
+
+        <div class="credentials-grid">
+          <div class="credentials-grid__title">Tài khoản mẫu</div>
+          <div class="credentials-grid__list">
+            <span>admin / admin123</span>
+            <span>test / test123</span>
+            <span>newuser123 / password123</span>
+            <span>testuser4 / password123</span>
+          </div>
+          <span class="helper-text">Tất cả mật khẩu được hash bằng BCrypt trong cơ sở dữ liệu.</span>
+        </div>
+
+        <nav class="nav-links">
+          <a class="nav-link" href="/profile.html">Đi tới trang hồ sơ</a>
+          <a class="nav-link" href="/api/test/public" target="_blank">Xem API công khai</a>
+          <a class="nav-link" href="/swagger-ui/index.html" target="_blank">Swagger UI</a>
+        </nav>
+      </section>
+
+      <footer>Spring Boot 3 · Spring Security 6 · JWT Demo</footer>
+    </div>
+  </body>
+</html>
