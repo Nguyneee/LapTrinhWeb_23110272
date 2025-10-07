@@ -1,0 +1,14 @@
+com\example\websocketchat\dto\ChatMessageDTO.class
+com\example\websocketchat\entity\ChatMessage$MessageType.class
+com\example\websocketchat\entity\ChatMessage.class
+com\example\websocketchat\entity\User.class
+com\example\websocketchat\entity\User$UserRole.class
+com\example\websocketchat\listener\WebSocketEventListener.class
+com\example\websocketchat\repository\ChatMessageRepository.class
+com\example\websocketchat\repository\UserRepository.class
+com\example\websocketchat\config\WebSocketConfig.class
+com\example\websocketchat\controller\ChatController.class
+com\example\websocketchat\config\DataInitializer.class
+com\example\websocketchat\controller\WebController.class
+com\example\websocketchat\service\ChatService.class
+com\example\websocketchat\WebSocketChatApplication.class

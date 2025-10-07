@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Chat Hỗ Trợ Khách Hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .hero-section {
+            padding: 100px 0;
+            color: white;
+            text-align: center;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-custom {
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-comments"></i>
+                Hệ Thống Chat Hỗ Trợ Khách Hàng
+            </h1>
+            <p class="lead mb-5">Kết nối trực tiếp với đội ngũ hỗ trợ chuyên nghiệp của chúng tôi</p>
+            
+            <div class="row justify-content-center">
+                <div class="col-md-5 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-5">
+                            <i class="fas fa-user feature-icon"></i>
+                            <h3 class="card-title mb-3">Khách Hàng</h3>
+                            <p class="card-text mb-4">
+                                Bạn cần hỗ trợ? Hãy chat với chúng tôi ngay!
+                            </p>
+                            <a href="/customer" class="btn btn-primary btn-custom">
+                                <i class="fas fa-comments"></i> Bắt Đầu Chat
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-5 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-5">
+                            <i class="fas fa-headset feature-icon"></i>
+                            <h3 class="card-title mb-3">Nhân Viên Hỗ Trợ</h3>
+                            <p class="card-text mb-4">
+                                Đăng nhập để hỗ trợ khách hàng
+                            </p>
+                            <a href="/support" class="btn btn-success btn-custom">
+                                <i class="fas fa-sign-in-alt"></i> Đăng Nhập
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h4 class="text-center mb-4 text-dark">
+                                <i class="fas fa-star"></i> Tính Năng Nổi Bật
+                            </h4>
+                            <div class="row text-center text-dark">
+                                <div class="col-md-4">
+                                    <i class="fas fa-bolt text-warning" style="font-size: 2rem;"></i>
+                                    <h6 class="mt-2">Real-time Chat</h6>
+                                    <small>Trò chuyện tức thì với WebSocket</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <i class="fas fa-shield-alt text-success" style="font-size: 2rem;"></i>
+                                    <h6 class="mt-2">Bảo Mật</h6>
+                                    <small>Dữ liệu được mã hóa an toàn</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <i class="fas fa-clock text-info" style="font-size: 2rem;"></i>
+                                    <h6 class="mt-2">24/7 Support</h6>
+                                    <small>Hỗ trợ liên tục mọi lúc</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
